@@ -1,0 +1,31 @@
+{
+  "name": "my-chat-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "NODE_ENV=development nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anton Izhykov a.k.a. LanzzLophophora",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "bluebird": "^3.5.5",
+    "express": "^4.17.1",
+    "express-mongoose-docs": "^0.3.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.2.7",
+    "mongoose": "^5.5.14",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.19.1",
+    "ws": "^7.1.2"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "semi": true
+  },
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  }
+}

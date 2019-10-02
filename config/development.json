@@ -1,0 +1,10 @@
+{
+  "host": "localhost",
+  "port": 5000,
+  "frontend_host": "localhost:3000",
+  "mongodb": "mongodb://localhost:27017/my-trello-db",
+  "mongoAuthObject": null,
+  "authentication": {
+    "secret": "nu489c0ACMACIDc0icjiiw"
+  }
+}

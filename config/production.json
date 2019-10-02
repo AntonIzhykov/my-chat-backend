@@ -1,0 +1,9 @@
+{
+  "host": "localhost",
+  "port": 5000,
+  "mongodb": "mongodb://localhost:27017/my-chat-db",
+  "mongoAuthObject": null,
+  "authentication": {
+    "secret": "qjdijiqj#r2f4fw43wccdkca[fjef"
+  }
+}

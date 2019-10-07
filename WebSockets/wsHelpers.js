@@ -16,14 +16,14 @@ async function authorization(message, ws) {
       sendError('Bad credentials', ws);
       return;
     }
-    let user = await User.findOne({ login });
+    let user = await User.findOne({ login }).select('+password');
     if (!user) {
       user = await User.create({ login, password });
     }
     const result = await user.comparePasswords(password);
     if (result) {
       ws.token = jwt.sign({ _id: user._id }, config.authentication.secret);
-      ws.user = user;
+      ws.user = await User.findOne({ login });
     } else {
       sendError('Wrong password', ws);
     }

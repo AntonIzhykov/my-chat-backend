@@ -26,6 +26,7 @@ function runWebSockets(wss) {
   wss.on('connection', ws => {
     ws.on('message', async request => {
       const message = JSON.parse(request);
+
       if (!ws.user) {
         const token = await checkTokenService(message);
         if (token) {
@@ -40,6 +41,18 @@ function runWebSockets(wss) {
         case CONSTANTS.USER_JOIN_CHAT:
           const chatRooms = await Room.find({});
           ws.send(JSON.stringify({ user: ws.user, token: ws.token, chatRooms }));
+          break;
+
+        case CONSTANTS.USER_LEFT_CHAT:
+          userLeftRoom(ws)
+            .then(resp => {
+              ws.currentRoom = null;
+              broadcastLeftUser(resp.user, resp.currentRoom, wss);
+            })
+            .catch(error => sendError(error, ws));
+          ws.user = null;
+          ws.token = null;
+          ws.send(JSON.stringify({ userLeftChat: true }));
           break;
 
         case CONSTANTS.USER_JOINED_ROOM:
@@ -119,8 +132,13 @@ function runWebSockets(wss) {
       sendError(e.message);
     });
     ws.on('close', e => {
-      console.log('websocket closed' + e);
-      broadcastLeftUser(ws.user, ws.currentRoom, wss)
+      console.log('websocket closed ' + e);
+      userLeftRoom(ws)
+        .then(resp => {
+          ws.currentRoom = null;
+          broadcastLeftUser(resp.user, resp.currentRoom, wss);
+        })
+        .catch(error => sendError(error, ws));
     });
   });
 }

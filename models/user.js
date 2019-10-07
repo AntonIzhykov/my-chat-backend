@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const UserSchema = new Schema({
   login: String,
-  password: String,
+  password: { type: String, select: false },
   isAdmin: Boolean,
   currentRoom: { type: Schema.Types.ObjectId, ref: 'Room' },
   lastRoom: { type: Schema.Types.ObjectId, ref: 'Room' }

@@ -11,6 +11,7 @@ const MessageSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Room'
   },
+  isEdited: Boolean,
   timeCreate: { type: Date, default: Date.now },
   timeEdit: { type: Date, default: Date.now }
 });

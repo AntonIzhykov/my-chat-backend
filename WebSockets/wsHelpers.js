@@ -110,6 +110,7 @@ async function editMessage({ messageBody, messageId }, ws) {
       message.set({
         ...message,
         messageBody,
+        isEdited: true,
         timeEdit: Date.now()
       });
       const newMessage = room.messages.id(messageId);

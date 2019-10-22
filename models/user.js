@@ -7,7 +7,12 @@ const UserSchema = new Schema({
   password: { type: String, select: false },
   isAdmin: Boolean,
   currentRoom: { type: Schema.Types.ObjectId, ref: 'Room' },
-  lastRoom: { type: Schema.Types.ObjectId, ref: 'Room' }
+  lastRoom: { type: Schema.Types.ObjectId, ref: 'Room' },
+  email: { type: String, required: false },
+  avatar: {
+    secure_url: String,
+    remote_id: String
+  }
 });
 
 UserSchema.pre('save', async function(next) {

@@ -19,7 +19,7 @@ function broadcastJoinUser(data, ws, wss) {
 }
 function broadcastLeftUser(user, roomId, wss) {
   wss.clients.forEach(client => {
-    if (client.currentRoom && client.currentRoom.toString() === roomId.toString()) {
+    if (client.currentRoom && roomId && client.currentRoom.toString() === roomId.toString()) {
       client.send(
         JSON.stringify({
           userLeftRoom: user._id
@@ -62,6 +62,12 @@ function broadcastDeleteMessage(roomId, messageId, wss) {
   });
 }
 
+function broadcastUserHasBeenChanged(user, wss) {
+  wss.clients.forEach(client => {
+    client.send(JSON.stringify({ userHasBeenChanged: user }))
+  });
+}
+
 function sendError(textError, ws) {
   console.log('error', textError);
   ws.send(JSON.stringify({ error: { message: textError } }));
@@ -74,5 +80,6 @@ module.exports = {
   broadcastNewMessage,
   broadcastEditMessage,
   broadcastDeleteMessage,
+  broadcastUserHasBeenChanged,
   sendError
 };

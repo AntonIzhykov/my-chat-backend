@@ -1,10 +1,22 @@
-const WebSocket = require('ws');
 const express = require('express');
+const session = require('express-session');
 const docs = require('express-mongoose-docs');
+const formData = require('express-form-data');
+const morgan = require('morgan');
 const mongoose = require('mongoose');
 const config = require('./config/');
+const router = require('./routes');
+const os = require('os');
 const connectDatabase = require('./db');
-const runWebSockets = require('./WebSockets/WebSockets');
+const { runWebSockets } = require('./WebSockets/WebSockets');
+const cloudinary = require('cloudinary');
+const bodyParser = require('body-parser');
+
+cloudinary.config({
+  cloud_name: config.cloudinary.cloud_name,
+  api_key: config.cloudinary.api_key,
+  api_secret: config.cloudinary.api_secret
+});
 
 connectDatabase()
   .on('disconnect', connectDatabase)
@@ -21,8 +33,36 @@ function runServer() {
     );
   });
 
-  const wss = new WebSocket.Server({ server });
-  runWebSockets(wss);
+  runWebSockets(server);
+
+  const options = {
+    uploadDir: os.tmpdir(),
+    autoClean: true
+  };
 
   docs(app, mongoose);
+  app.use(morgan('tiny'));
+
+  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(formData.parse(options));
+  app.use(formData.format());
+  app.use(formData.stream());
+  app.use(formData.union());
+  app.use(
+    session({
+      resave: true,
+      saveUninitialized: true,
+      secret: config.authentication.secret
+    })
+  );
+  app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, PATCH, POST, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Login, Password, authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+  });
+
+  app.use('/api', router);
 }

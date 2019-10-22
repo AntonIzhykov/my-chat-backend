@@ -1,15 +1,15 @@
 const CONSTANTS = require('./wsConstants');
-const Room = require('../models/room');
+const WebSocket = require('ws');
 const { getUserByTokenService, checkTokenService } = require('../services');
 const {
-  authorization,
   userJoinRoom,
   userLeftRoom,
   createRoom,
   deleteRoom,
   createMessage,
   editMessage,
-  deleteMessage
+  deleteMessage,
+  updateUserData
 } = require('./wsHelpers');
 const {
   broadcastJoinUser,
@@ -19,30 +19,33 @@ const {
   broadcastNewMessage,
   broadcastEditMessage,
   broadcastDeleteMessage,
+  broadcastUserHasBeenChanged,
   sendError
 } = require('./wsBroadcasts');
 
-function runWebSockets(wss) {
+let wss = null;
+
+const getSockets = () => {
+  return wss;
+};
+
+function runWebSockets(server) {
+  wss = new WebSocket.Server({ server });
+
   wss.on('connection', ws => {
     ws.on('message', async request => {
       const message = JSON.parse(request);
 
+      // console.log('MESSAGE =>', message);
       if (!ws.user) {
         const token = await checkTokenService(message);
         if (token) {
           ws.token = message.token;
           ws.user = await getUserByTokenService(token);
-        } else {
-          await authorization(message, ws);
         }
       }
 
       switch (message.type) {
-        case CONSTANTS.USER_JOIN_CHAT:
-          const chatRooms = await Room.find({});
-          ws.send(JSON.stringify({ user: ws.user, token: ws.token, chatRooms }));
-          break;
-
         case CONSTANTS.USER_LEFT_CHAT:
           userLeftRoom(ws)
             .then(resp => {
@@ -53,6 +56,7 @@ function runWebSockets(wss) {
           ws.user = null;
           ws.token = null;
           ws.send(JSON.stringify({ userLeftChat: true }));
+          ws.close();
           break;
 
         case CONSTANTS.USER_JOINED_ROOM:
@@ -122,6 +126,12 @@ function runWebSockets(wss) {
             .catch(error => sendError(error, ws));
           break;
 
+        case CONSTANTS.UPDATE_USER_DATA:
+          updateUserData(message.data, ws)
+            .then(user => broadcastUserHasBeenChanged(user, wss))
+            .catch(error => sendError(error, ws));
+          break;
+
         default: {
           console.log('entered message => ', message);
         }
@@ -133,14 +143,18 @@ function runWebSockets(wss) {
     });
     ws.on('close', e => {
       console.log('websocket closed ' + e);
-      userLeftRoom(ws)
-        .then(resp => {
-          ws.currentRoom = null;
-          broadcastLeftUser(resp.user, resp.currentRoom, wss);
-        })
-        .catch(error => sendError(error, ws));
+      ws.user &&
+        userLeftRoom(ws)
+          .then(resp => {
+            ws.currentRoom = null;
+            broadcastLeftUser(resp.user, resp.currentRoom, wss);
+          })
+          .catch(error => sendError(error, ws));
     });
   });
 }
 
-module.exports = runWebSockets;
+module.exports = {
+  runWebSockets,
+  getSockets
+};

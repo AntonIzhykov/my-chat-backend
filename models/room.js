@@ -8,7 +8,7 @@ const MessageSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Room'
   },
-  isEdited: Boolean,
+  isEdited: { type: Boolean, default: false },
   timeCreate: { type: Date, default: Date.now },
   timeEdit: { type: Date, default: Date.now }
 });

@@ -1,31 +1,37 @@
 function broadcastJoinUser(data, ws, wss) {
   const { user, room } = data;
   wss.clients.forEach(client => {
-    if (
-      client.currentRoom &&
-      client.currentRoom.toString() === room._id.toString() &&
-      client !== ws
-    ) {
-      client.send(
-        JSON.stringify({
-          userJoinedRoom: {
+    // if (
+    //   client.currentRoom &&
+    //   client.currentRoom.toString() === room._id.toString() &&
+    //   client !== ws
+    // ) {
+    client.send(
+      JSON.stringify({
+        userJoinedRoom: {
+          roomId: room._id,
+          user: {
             login: user.login,
             _id: user._id
           }
-        })
-      );
-    }
+        }
+      })
+    );
+    // }
   });
 }
 function broadcastLeftUser(user, roomId, wss) {
   wss.clients.forEach(client => {
-    if (client.currentRoom && roomId && client.currentRoom.toString() === roomId.toString()) {
-      client.send(
-        JSON.stringify({
-          userLeftRoom: user._id
-        })
-      );
-    }
+    // if (client.currentRoom && roomId && client.currentRoom.toString() === roomId.toString()) {
+    client.send(
+      JSON.stringify({
+        userLeftRoom: {
+          userId: user._id,
+          roomId
+        }
+      })
+    );
+    // }
   });
 }
 
@@ -64,7 +70,7 @@ function broadcastDeleteMessage(roomId, messageId, wss) {
 
 function broadcastUserHasBeenChanged(user, wss) {
   wss.clients.forEach(client => {
-    client.send(JSON.stringify({ userHasBeenChanged: user }))
+    client.send(JSON.stringify({ userHasBeenChanged: user }));
   });
 }
 

@@ -6,7 +6,7 @@ getUserByTokenService = async token => {
   try {
     const user = await User.findOne({ _id }, { password: 0 }).populate({
       path: 'lastRoom',
-      select: 'roomName'
+      select: 'roomName _id'
     });
     if (user) return user;
   } catch (e) {

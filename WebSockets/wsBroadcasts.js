@@ -1,11 +1,6 @@
 function broadcastJoinUser(data, ws, wss) {
   const { user, room } = data;
   wss.clients.forEach(client => {
-    // if (
-    //   client.currentRoom &&
-    //   client.currentRoom.toString() === room._id.toString() &&
-    //   client !== ws
-    // ) {
     client.send(
       JSON.stringify({
         userJoinedRoom: {
@@ -22,7 +17,6 @@ function broadcastJoinUser(data, ws, wss) {
 }
 function broadcastLeftUser(user, roomId, wss) {
   wss.clients.forEach(client => {
-    // if (client.currentRoom && roomId && client.currentRoom.toString() === roomId.toString()) {
     client.send(
       JSON.stringify({
         userLeftRoom: {
@@ -31,13 +25,17 @@ function broadcastLeftUser(user, roomId, wss) {
         }
       })
     );
-    // }
   });
 }
 
 function broadcastNewRoom(newRoom, wss) {
   wss.clients.forEach(client => {
     client.send(JSON.stringify({ newRoom }));
+  });
+}
+function broadcastEditRoom(editedRoom, wss) {
+  wss.clients.forEach(client => {
+    client.send(JSON.stringify({ roomEdited: editedRoom }));
   });
 }
 function broadcastDeleteRoom(roomId, wss) {
@@ -82,6 +80,7 @@ module.exports = {
   broadcastJoinUser,
   broadcastLeftUser,
   broadcastNewRoom,
+  broadcastEditRoom,
   broadcastDeleteRoom,
   broadcastNewMessage,
   broadcastEditMessage,

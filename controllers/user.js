@@ -4,7 +4,8 @@ const {
   uploadToCloudinary
 } = require('../services/UserService');
 const User = require('../models/user');
-const { Room } = require('../models/room');
+const Room = require('../models/room');
+const Message = require('../models/message');
 const { getSockets } = require('../WebSockets/WebSockets');
 const { broadcastUserHasBeenChanged } = require('../WebSockets/wsBroadcasts');
 const cloudinary = require('cloudinary');
@@ -131,15 +132,13 @@ const updateUser = async (req, res) => {
 
 const getReport = async (req, res) => {
   try {
-    const allUsers = await User.find({});
-    const allRooms = await Room.find({});
-    const allMessages = [];
-    await allRooms.map(room => room.messages.map(message => allMessages.push(message)));
+    const allUsers = await User.find({}).populate('messages');
+    const allRooms = await Room.find({}).populate('messages users');
+    const allMessages = await Message.find({}).populate('author');
+
     const user = req.user;
     const userRooms = await Room.find({ roomCreator: user._id });
-    const userMessages = allMessages.filter(
-      message => message.author.toString() === user._id.toString()
-    );
+    const userMessages = await Message.find({ author: user._id });
     const report = {
       allRooms,
       allMessages,

@@ -9,6 +9,7 @@ const EDIT_MESSAGE = 'edit_message';
 const DELETE_MESSAGE = 'delete_message';
 
 const CREATE_ROOM = 'create_room';
+const EDIT_ROOM = 'edit_room';
 const DELETE_ROOM = 'delete_room';
 
 const UPDATE_USER_DATA = 'update_user_data';
@@ -23,5 +24,6 @@ module.exports = {
   DELETE_MESSAGE,
   CREATE_ROOM,
   DELETE_ROOM,
+  EDIT_ROOM,
   UPDATE_USER_DATA
 };

@@ -5,6 +5,7 @@ const {
   userJoinRoom,
   userLeftRoom,
   createRoom,
+  editRoom,
   deleteRoom,
   createMessage,
   editMessage,
@@ -15,6 +16,7 @@ const {
   broadcastJoinUser,
   broadcastLeftUser,
   broadcastNewRoom,
+  broadcastEditRoom,
   broadcastDeleteRoom,
   broadcastNewMessage,
   broadcastEditMessage,
@@ -36,7 +38,7 @@ function runWebSockets(server) {
     ws.on('message', async request => {
       const message = JSON.parse(request);
 
-      // console.log('MESSAGE =>', message);
+      console.log('MESSAGE =>', message);
       if (!ws.user) {
         const token = await checkTokenService(message);
         if (token) {
@@ -97,6 +99,13 @@ function runWebSockets(server) {
           createRoom(message.data.roomName, ws)
             .then(room => {
               broadcastNewRoom(room, wss);
+            })
+            .catch(error => sendError(error, ws));
+          break;
+        case CONSTANTS.EDIT_ROOM:
+          editRoom(message.data, ws)
+            .then(room => {
+              broadcastEditRoom(room, wss);
             })
             .catch(error => sendError(error, ws));
           break;

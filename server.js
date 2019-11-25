@@ -11,6 +11,9 @@ const connectDatabase = require('./db');
 const { runWebSockets } = require('./WebSockets/WebSockets');
 const cloudinary = require('cloudinary');
 const bodyParser = require('body-parser');
+const graphqlHTTP = require('express-graphql');
+const schema = require('./graphQL/schema');
+const cors = require('cors');
 
 cloudinary.config({
   cloud_name: config.cloudinary.cloud_name,
@@ -41,7 +44,16 @@ function runServer() {
   };
 
   docs(app, mongoose);
+  app.use(cors());
   app.use(morgan('tiny'));
+
+  app.use(
+    '/graphql',
+    graphqlHTTP({
+      schema,
+      graphiql: true
+    })
+  );
 
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(bodyParser.urlencoded({ extended: true }));

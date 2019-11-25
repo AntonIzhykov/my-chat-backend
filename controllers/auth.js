@@ -21,8 +21,7 @@ const authentication = async (req, res) => {
         ...credentials,
         isAdmin: credentials.isAdmin || false,
         avatar: {
-          secure_url:
-            'https://res.cloudinary.com/lanzz-lophophora/image/upload/v1571661800/avatars/defaultAvatar.jpg'
+          secure_url: config.defaultAvatar
         }
       };
       user = await User.create(userData);
@@ -30,6 +29,7 @@ const authentication = async (req, res) => {
       res.status(200).send({ token });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).send({ error });
   }
 };

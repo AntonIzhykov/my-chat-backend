@@ -7,10 +7,12 @@ const UserSchema = new Schema({
   password: { type: String, select: false },
   isAdmin: Boolean,
   currentRoom: { type: Schema.Types.ObjectId, ref: 'Room' },
+  messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
   lastRoom: { type: Schema.Types.ObjectId, ref: 'Room' },
   email: { type: String, required: false },
   avatar: {
-    secure_url: { type: String, default: '' }
+    secure_url: { type: String, default: '' },
+    public_id: { type: String, default: '' }
   }
 });
 

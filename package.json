@@ -9,7 +9,7 @@
   "author": "Anton Izhykov a.k.a. LanzzLophophora",
   "license": "MIT",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "bluebird": "^3.5.5",
     "body-parser": "^1.19.0",
     "cloudinary": "^1.15.0",
